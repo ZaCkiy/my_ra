@@ -30,11 +30,8 @@
         .btn-primary { background-color: var(--accent-color); color: #000; }
         .btn-success { background-color: var(--success-color); color: #000; }
         .btn-danger { background-color: var(--danger-color); color: #fff; }
-        .btn-outline { background: transparent; border: 1px solid #555; color: #fff; }
         .icon { margin-right: 8px; }
 
-        /* Login Page */
-        #login-page { display: flex; flex-direction: column; justify-content: center; height: 100vh; text-align: center; }
         input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid #444; color: #fff; border-radius: 8px; margin-bottom: 10px; font-family: 'Poppins'; }
         
         /* Dashboard Header */
@@ -47,17 +44,15 @@
         .room-card { background: var(--card-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-left: 5px solid var(--accent-color); }
         .room-card.completed { border-left: 5px solid var(--green-besi); background: #1b2e1b; } 
         .room-number { font-size: 1.2rem; font-weight: bold; }
-        .room-status { font-size: 0.9rem; padding: 4px 8px; background: #333; border-radius: 4px; }
+        .room-status { font-size: 0.8rem; padding: 4px 8px; background: #333; border-radius: 4px; color: var(--accent-color); }
         
-        /* Modal / Overlay */
+        /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .status-grid, .number-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
         .grid-btn { padding: 15px; background: var(--card-color); border: 1px solid #444; color: #fff; border-radius: 8px; font-weight: bold; }
 
-        /* User Menu Modal */
         .menu-list { width: 100%; max-width: 300px; background: var(--card-color); border-radius: 12px; padding: 20px; text-align: center; }
-        .menu-item { display: block; width: 100%; padding: 15px; border-bottom: 1px solid #333; cursor: pointer; font-size: 1rem; }
-        .menu-item:last-child { border-bottom: none; color: var(--danger-color); }
+        .menu-item { display: block; width: 100%; padding: 15px; border-bottom: 1px solid #333; cursor: pointer; }
 
         /* Detail Page */
         .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -65,24 +60,19 @@
         .time-btn.active { background: var(--accent-color); color: #000; }
         .status2-btn { background: #2c2c2c; color: #fff; border: 1px solid #555; margin-bottom: 15px; }
         
-        .item-list { display: flex; flex-direction: column; gap: 8px; }
-        .item-row { background: var(--card-color); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; cursor: pointer; }
+        .item-row { background: var(--card-color); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; cursor: pointer; margin-bottom: 8px;}
         .item-qty { font-weight: bold; color: var(--success-color); }
 
         /* Summary */
         .summary-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
         .summary-table th, .summary-table td { border: 1px solid #444; padding: 8px; text-align: left; }
         .summary-table th { background: #333; }
-        .activity-section { margin-top: 20px; border-top: 1px solid #444; padding-top: 10px; }
 
-        /* Print Style (PDF) */
         @media print {
+            .no-print { display: none !important; }
             body { background: #fff; color: #000; }
-            .no-print, .btn, .header-stats, .header-top, .input-section { display: none !important; }
-            #summary-content { display: block !important; }
+            #summary-page { display: block !important; }
             .summary-table th, .summary-table td { border: 1px solid #000; color: #000; }
-            #dashboard-page, #detail-page { display: none; }
-            #summary-page { display: block; position: absolute; top:0; left:0; width: 100%; }
         }
     </style>
 </head>
@@ -98,8 +88,8 @@
     <div id="dashboard-page" class="container hidden">
         <div class="header-top">
             <h3><span data-lang="hi">Hi</span>, <span id="display-name">User</span></h3>
-            <div onclick="openUserMenu()" style="cursor: pointer; 15px;">
-                <i class="fa-solid fa-circle-user"></i>
+            <div onclick="openUserMenu()" style="cursor: pointer; padding: 8px; background: #333; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-circle-user" style="font-size: 1.5rem;"></i>
             </div>
         </div>
 
@@ -110,22 +100,20 @@
         </div>
 
         <div class="input-section" style="background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-            <h4><i class="fa-solid fa-plus-circle icon"></i><span data-lang="input_room">New Room Input</span></h4>
+            <h4><i class="fa-solid fa-door-open icon"></i><span data-lang="input_room">New Room Input</span></h4>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <input type="number" id="new-room-number" placeholder="Room No." style="margin:0; width: 60%;">
                 <button class="btn btn-primary" style="margin:0; width: 40%;" onclick="openStatusModal('initial')">Status 1</button>
             </div>
         </div>
 
-        <div id="room-list">
-            </div>
+        <div id="room-list"></div>
 
         <div class="input-section" style="margin-top: 30px; background: var(--card-color); padding: 15px; border-radius: 10px;">
             <h4 data-lang="daily_act">Daily Activities</h4>
-            <label style="font-size: 0.8rem; color:#aaa;">Morning Activity (07:00 - 08:00)</label>
+            <label style="font-size: 0.8rem; color:#aaa;">Morning (07:00 - 08:00)</label>
             <textarea id="act-morning" rows="2"></textarea>
-            
-            <label style="font-size: 0.8rem; color:#aaa;">Afternoon Activity (End Shift)</label>
+            <label style="font-size: 0.8rem; color:#aaa;">Afternoon (End Shift)</label>
             <textarea id="act-afternoon" rows="2"></textarea>
         </div>
 
@@ -137,8 +125,8 @@
     <div id="detail-page" class="container hidden">
         <div class="detail-header">
             <button onclick="goBack()" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="detail-room-number">Room 101</h2>
-            <span id="detail-status-1" class="room-status">VD</span>
+            <h2 id="detail-room-number">Room</h2>
+            <span id="detail-status-1" class="room-status"></span>
         </div>
 
         <button id="btn-time-in" class="btn time-btn" onclick="setTime('in')">
@@ -146,15 +134,14 @@
         </button>
 
         <button id="btn-status-2" class="btn status2-btn" onclick="openStatusModal('status2')">
-            <i class="fa-solid fa-tasks icon"></i> <span id="display-status-2">Select Status 2</span>
+            <i class="fa-solid fa-rotate icon"></i> <span id="display-status-2">Select Status 2</span>
         </button>
 
         <h4 style="margin: 15px 0 10px 0;"><i class="fa-solid fa-list-check icon"></i>Amenities & Linen</h4>
-        <div id="amenities-list" class="item-list">
-            </div>
+        <div id="amenities-list"></div>
 
         <h4 style="margin: 20px 0 10px 0;"><i class="fa-solid fa-sticky-note icon"></i><span data-lang="note">Note</span></h4>
-        <textarea id="room-note" rows="3" placeholder="..."></textarea>
+        <textarea id="room-note" rows="3"></textarea>
 
         <button id="btn-time-out" class="btn time-btn" onclick="setTime('out')">
             <i class="fa-solid fa-clock icon"></i> Time Out <span id="display-time-out">--:--</span>
@@ -167,428 +154,193 @@
 
     <div id="summary-page" class="container hidden">
         <div class="no-print" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-            <button onclick="goBackToDashboard()" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fa-solid fa-arrow-left"></i> <span data-lang="back">Back</span></button>
-            <button onclick="printReport()" style="background:none; border:none; color:var(--accent-color); font-size:1.2rem;"><i class="fa-solid fa-print"></i> PDF</button>
+            <button onclick="goBackToDashboard()" style="background:none; border:none; color:white;"><i class="fa-solid fa-arrow-left"></i> <span data-lang="back">Back</span></button>
+            <button onclick="printReport()" style="background:none; border:none; color:var(--accent-color);"><i class="fa-solid fa-print"></i> PDF</button>
         </div>
-
         <div id="summary-content">
-            <h2 style="text-align: center; border-bottom: 1px solid #ccc; padding-bottom: 10px;" data-lang="report_title">Room Attendant Daily Report</h2>
+            <h2 style="text-align: center; border-bottom: 1px solid #444;" data-lang="report_title">Daily Report</h2>
             <p><strong>Name:</strong> <span id="sum-name"></span></p>
             <p><strong>Date:</strong> <span id="sum-date"></span></p>
-            <br>
             <table class="summary-table">
                 <thead>
-                    <tr>
-                        <th data-lang="tbl_room">Room</th>
-                        <th data-lang="tbl_time">Time</th>
-                        <th data-lang="tbl_status">Status (1 > 2 > 3)</th>
-                        <th data-lang="tbl_items">Items</th>
-                    </tr>
+                    <tr><th>Room</th><th>Time</th><th>Status</th><th>Items</th></tr>
                 </thead>
-                <tbody id="summary-body">
-                    </tbody>
+                <tbody id="summary-body"></tbody>
             </table>
-            
             <div style="margin-top: 20px; text-align: right;">
                 <p><span data-lang="total_credit">Total Credit</span>: <strong id="sum-credit">0</strong></p>
                 <p><span data-lang="total_done">Total Done</span>: <strong id="sum-done">0</strong></p>
             </div>
-
-            <div class="activity-section">
+            <div style="margin-top:20px; border-top:1px solid #444; padding-top:10px;">
                 <h4>Daily Activities</h4>
-                <p><strong>Morning (07-08):</strong> <span id="sum-morning">-</span></p>
-                <p style="margin-top:10px;"><strong>Afternoon:</strong> <span id="sum-afternoon">-</span></p>
+                <p><strong>Morning:</strong> <span id="sum-morning"></span></p>
+                <p><strong>Afternoon:</strong> <span id="sum-afternoon"></span></p>
             </div>
         </div>
     </div>
 
     <div id="user-menu-modal" class="modal hidden" onclick="closeModal()">
         <div class="menu-list" onclick="event.stopPropagation()">
-            <h3 style="margin-bottom:15px; border-bottom:1px solid #444; padding-bottom:10px;">Menu</h3>
             <div class="menu-item" onclick="switchLanguage()">
                 <i class="fa-solid fa-language icon"></i> <span id="lang-label">Switch to Indonesia</span>
             </div>
-            <div class="menu-item" onclick="logout()">
-                <i class="fa-solid fa-right-from-bracket icon"></i> Logout (Reset Data)
+            <div class="menu-item" style="color:var(--danger-color)" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket icon"></i> Logout & Reset Data
             </div>
         </div>
     </div>
 
     <div id="status-modal" class="modal hidden">
-        <h3 style="color: white; margin-bottom: 20px;" data-lang="select_status">Select Status</h3>
-        <div id="status-options" class="status-grid">
-            </div>
-        <button class="btn btn-danger" style="margin-top: 20px;" onclick="closeModal()" data-lang="cancel">Cancel</button>
+        <h3 data-lang="select_status">Select Status</h3>
+        <div id="status-options" class="status-grid"></div>
+        <button class="btn btn-danger" onclick="closeModal()" data-lang="cancel">Cancel</button>
     </div>
 
     <div id="qty-modal" class="modal hidden">
-        <h3 style="color: white; margin-bottom: 20px;">Qty</h3>
+        <h3>Qty</h3>
         <div class="number-grid">
-            <button class="grid-btn" onclick="selectQty(1)">1</button>
-            <button class="grid-btn" onclick="selectQty(2)">2</button>
-            <button class="grid-btn" onclick="selectQty(3)">3</button>
-            <button class="grid-btn" onclick="selectQty(4)">4</button>
-            <button class="grid-btn" onclick="selectQty(5)">5</button>
-            <button class="grid-btn" onclick="selectQty(6)">6</button>
-            <button class="grid-btn" onclick="selectQty(7)">7</button>
-            <button class="grid-btn" onclick="selectQty(8)">8</button>
-            <button class="grid-btn" onclick="selectQty(9)">9</button>
-            <button class="grid-btn" onclick="selectQty(10)">10</button>
-            <button class="grid-btn" style="background: #555;" onclick="selectQty(0)">0</button>
+            <script>
+                for(let i=1; i<=10; i++) document.write(`<button class="grid-btn" onclick="selectQty(${i})">${i}</button>`);
+            </script>
+            <button class="grid-btn" style="background:#555" onclick="selectQty(0)">0</button>
         </div>
-        <button class="btn btn-danger" style="margin-top: 20px;" onclick="closeModal()" data-lang="cancel">Cancel</button>
     </div>
 
     <script>
-        // DATA & STATE
-        const itemsList = [
-            "Sheet Twin", "Sheet King", "Duve Twin", "Duve King", "Pillow Case",
-            "Bath Towel", "Hand Towel", "Bath Mat", "Soap", "Shampoo", "Dental Kit",
-            "Shower Cap", "Sanitary Bag", "Cotton Bud", "Comb", "Tissue Roll", "Slipper",
-            "Laundry Bag", "Laundry List", "Memo Pad", "Pencil", "White Sugar", "Brown Sugar",
-            "Creamer", "Coffee", "Tea", "Mineral Water", "Stirrer", "Glass Coaster"
-        ];
-        
-        // Status List (Used for Status 1, 2, and 3)
-        const allStatuses = ["VD", "OD", "NS", "SO", "ED", "VCU", "OO", "VC", "OC", "DL", "SR"];
+        const itemsList = ["Sheet Twin", "Sheet King", "Duve Twin", "Duve King", "Pillow Case", "Bath Towel", "Hand Towel", "Bath Mat", "Soap", "Shampoo", "Dental Kit", "Shower Cap", "Sanitary Bag", "Cotton Bud", "Comb", "Tissue Roll", "Slipper", "Laundry Bag", "Laundry List", "Memo Pad", "Pencil", "White Sugar", "Brown Sugar", "Creamer", "Coffee", "Tea", "Mineral Water", "Stirrer", "Glass Coaster"];
+        // Status sesuai permintaan
+        const allStatuses = ["VD", "VC", "OD", "OC", "ED", "NS", "SO", "VCU", "SR"];
 
         let currentUser = localStorage.getItem('myra_user') || "";
         let rooms = JSON.parse(localStorage.getItem('myra_rooms')) || [];
         let activities = JSON.parse(localStorage.getItem('myra_activities')) || { morning: "", afternoon: "" };
         let currentLang = localStorage.getItem('myra_lang') || "en";
+        let currentRoomId = null, currentStatusType = "", currentItemIndex = -1;
 
-        let currentRoomId = null;
-        let currentStatusType = ""; // 'initial', 'status2', 'final'
-        let currentItemIndex = -1;
-
-        // DICTIONARY
         const langDict = {
-            en: {
-                app_desc: "Room Attendant Application", btn_login: "Start Shift", hi: "Hi",
-                credit: "Credit", progress: "Progress", done: "Done", input_room: "New Room Input",
-                daily_act: "Daily Activities", btn_end: "End Shift & Summary",
-                note: "Note", btn_final: "Status 3 (Done)", back: "Back",
-                report_title: "Room Attendant Daily Report", tbl_room: "Room", tbl_time: "Time",
-                tbl_status: "Status (1 > 2 > 3)", tbl_items: "Items used",
-                total_credit: "Total Credit", total_done: "Total Done",
-                select_status: "Select Status", cancel: "Cancel",
-                lang_label: "Switch to Indonesia"
-            },
-            id: {
-                app_desc: "Aplikasi Room Attendant", btn_login: "Mulai Shift", hi: "Halo",
-                credit: "Kredit", progress: "Progres", done: "Selesai", input_room: "Input Kamar Baru",
-                daily_act: "Aktivitas Harian", btn_end: "Akhiri Shift & Rekap",
-                note: "Catatan", btn_final: "Status 3 (Selesai)", back: "Kembali",
-                report_title: "Laporan Harian Room Attendant", tbl_room: "Kamar", tbl_time: "Waktu",
-                tbl_status: "Status (1 > 2 > 3)", tbl_items: "Barang Terpakai",
-                total_credit: "Total Kredit", total_done: "Total Selesai",
-                select_status: "Pilih Status", cancel: "Batal",
-                lang_label: "Ganti ke Bahasa Inggris"
-            }
+            en: { app_desc: "Room Attendant Application", btn_login: "Start Shift", hi: "Hi", credit: "Credit", progress: "Progress", done: "Done", input_room: "New Room Input", daily_act: "Daily Activities", btn_end: "End Shift & Summary", note: "Note", btn_final: "Status 3 (Done)", back: "Back", report_title: "Room Attendant Daily Report", total_credit: "Total Credit", total_done: "Total Done", select_status: "Select Status", cancel: "Cancel", lang_label: "Switch to Indonesia" },
+            id: { app_desc: "Aplikasi Room Attendant", btn_login: "Mulai Shift", hi: "Halo", credit: "Kredit", progress: "Progres", done: "Selesai", input_room: "Input Kamar Baru", daily_act: "Aktivitas Harian", btn_end: "Akhiri Shift & Rekap", note: "Catatan", btn_final: "Status 3 (Selesai)", back: "Kembali", report_title: "Laporan Harian Room Attendant", total_credit: "Total Kredit", total_done: "Total Selesai", select_status: "Pilih Status", cancel: "Batal", lang_label: "Ganti ke B.Inggris" }
         };
 
-        // INIT
-        window.onload = function() {
-            applyLanguage();
-            if (currentUser) {
-                showDashboard();
-            }
-        };
-
-        // LANGUAGE SYSTEM
-        function switchLanguage() {
-            currentLang = currentLang === 'en' ? 'id' : 'en';
-            localStorage.setItem('myra_lang', currentLang);
-            applyLanguage();
-            document.getElementById('user-menu-modal').classList.add('hidden');
-        }
+        window.onload = () => { applyLanguage(); if(currentUser) showDashboard(); };
 
         function applyLanguage() {
-            const dict = langDict[currentLang];
-            document.querySelectorAll('[data-lang]').forEach(el => {
-                const key = el.getAttribute('data-lang');
-                if (dict[key]) el.innerText = dict[key];
-            });
-            document.getElementById('username').placeholder = currentLang === 'en' ? "Name / ID" : "Nama / ID";
-            document.getElementById('new-room-number').placeholder = currentLang === 'en' ? "Room No." : "No. Kamar";
-            document.getElementById('lang-label').innerText = dict.lang_label;
+            const d = langDict[currentLang];
+            document.querySelectorAll('[data-lang]').forEach(el => el.innerText = d[el.getAttribute('data-lang')]);
+            document.getElementById('lang-label').innerText = d.lang_label;
         }
 
-        // LOGIN / LOGOUT
+        function switchLanguage() { currentLang = currentLang === 'en' ? 'id' : 'en'; localStorage.setItem('myra_lang', currentLang); applyLanguage(); closeModal(); }
+
         function login() {
-            const name = document.getElementById('username').value;
-            if (name.trim() === "") return alert("Please enter name!");
-            currentUser = name;
-            localStorage.setItem('myra_user', currentUser);
-            showDashboard();
-        }
-
-        function openUserMenu() {
-            document.getElementById('user-menu-modal').classList.remove('hidden');
+            let n = document.getElementById('username').value;
+            if(!n) return alert("Enter Name!");
+            currentUser = n; localStorage.setItem('myra_user', n); showDashboard();
         }
 
         function logout() {
-            if(confirm("Logout and RESET all data for today?")) {
-                currentUser = "";
-                // Reset Data
-                localStorage.removeItem('myra_user');
-                localStorage.removeItem('myra_rooms');
-                localStorage.removeItem('myra_activities');
-                rooms = [];
-                activities = { morning: "", afternoon: "" };
-
-                document.getElementById('dashboard-page').classList.add('hidden');
-                document.getElementById('user-menu-modal').classList.add('hidden');
-                document.getElementById('login-page').classList.remove('hidden');
-                document.getElementById('username').value = "";
+            if(confirm("Logout and RESET all data?")) {
+                localStorage.clear(); location.reload();
             }
         }
 
-        // DASHBOARD
         function showDashboard() {
             document.getElementById('login-page').classList.add('hidden');
-            document.getElementById('detail-page').classList.add('hidden');
-            document.getElementById('summary-page').classList.add('hidden');
             document.getElementById('dashboard-page').classList.remove('hidden');
             document.getElementById('display-name').innerText = currentUser;
-            
-            // Load activities
             document.getElementById('act-morning').value = activities.morning;
             document.getElementById('act-afternoon').value = activities.afternoon;
-
-            renderRoomList();
-            updateStats();
+            renderRoomList(); updateStats();
         }
 
-        // Activity Listeners
-        document.getElementById('act-morning').addEventListener('input', (e) => {
-            activities.morning = e.target.value;
-            localStorage.setItem('myra_activities', JSON.stringify(activities));
-        });
-        document.getElementById('act-afternoon').addEventListener('input', (e) => {
-            activities.afternoon = e.target.value;
-            localStorage.setItem('myra_activities', JSON.stringify(activities));
-        });
+        document.getElementById('act-morning').oninput = (e) => { activities.morning = e.target.value; saveAct(); };
+        document.getElementById('act-afternoon').oninput = (e) => { activities.afternoon = e.target.value; saveAct(); };
+        function saveAct() { localStorage.setItem('myra_activities', JSON.stringify(activities)); }
 
-        // ROOM LOGIC
         function openStatusModal(type) {
             currentStatusType = type;
-            const modal = document.getElementById('status-modal');
             const grid = document.getElementById('status-options');
             grid.innerHTML = "";
-            
-            allStatuses.forEach(status => {
-                grid.innerHTML += `<button class="grid-btn" onclick="selectStatus('${status}')">${status}</button>`;
-            });
-            modal.classList.remove('hidden');
+            allStatuses.forEach(s => grid.innerHTML += `<button class="grid-btn" onclick="selectStatus('${s}')">${s}</button>`);
+            document.getElementById('status-modal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('status-modal').classList.add('hidden');
-            document.getElementById('qty-modal').classList.add('hidden');
-            document.getElementById('user-menu-modal').classList.add('hidden');
-        }
-
-        function selectStatus(status) {
+        function selectStatus(s) {
             closeModal();
-            if (currentStatusType === 'initial') {
-                addRoom(status);
-            } else if (currentStatusType === 'status2') {
-                rooms[currentRoomId].status2 = status;
-                saveData();
-                document.getElementById('display-status-2').innerText = status;
-            } else if (currentStatusType === 'final') {
-                finishRoom(status);
-            }
+            if(currentStatusType === 'initial') addRoom(s);
+            else if(currentStatusType === 'status2') { rooms[currentRoomId].status2 = s; save(); document.getElementById('display-status-2').innerText = s; }
+            else if(currentStatusType === 'final') { rooms[currentRoomId].status3 = s; rooms[currentRoomId].isCompleted = true; save(); goBack(); }
         }
 
-        function addRoom(status) {
-            const num = document.getElementById('new-room-number').value;
-            if (!num) return alert("Enter Room Number!");
-            
-            const newRoom = {
-                id: Date.now(),
-                number: num,
-                status1: status,
-                status2: "", 
-                status3: "",
-                timeIn: "",
-                timeOut: "",
-                items: new Array(itemsList.length).fill(0),
-                note: "",
-                isCompleted: false
-            };
-            
-            rooms.push(newRoom);
-            saveData();
-            document.getElementById('new-room-number').value = "";
-            renderRoomList();
-            updateStats();
-        }
-
-        function saveData() {
-            localStorage.setItem('myra_rooms', JSON.stringify(rooms));
+        function addRoom(s) {
+            let num = document.getElementById('new-room-number').value;
+            if(!num) return alert("Enter Room!");
+            rooms.push({ number: num, status1: s, status2: "", status3: "", timeIn: "", timeOut: "", items: new Array(itemsList.length).fill(0), note: "", isCompleted: false });
+            save(); document.getElementById('new-room-number').value = ""; renderRoomList(); updateStats();
         }
 
         function renderRoomList() {
-            const list = document.getElementById('room-list');
-            list.innerHTML = "";
-            rooms.forEach((room, index) => {
-                let displayStatus = `<span style="color:var(--accent-color)">${room.status1}</span>`;
-                if(room.status2) displayStatus += ` > ${room.status2}`;
-                if(room.isCompleted) displayStatus += ` > <strong style="color:var(--success-color)">${room.status3}</strong>`;
-
-                list.innerHTML += `
-                    <div class="room-card ${room.isCompleted ? 'completed' : ''}" onclick="openRoomDetail(${index})">
-                        <div>
-                            <div class="room-number">${room.number}</div>
-                            <div style="font-size: 0.8rem; color:#aaa; margin-top:5px;">${room.timeIn || "--:--"} - ${room.timeOut || "--:--"}</div>
-                        </div>
-                        <div class="room-status">${displayStatus}</div>
-                    </div>
-                `;
+            const container = document.getElementById('room-list'); container.innerHTML = "";
+            rooms.forEach((r, i) => {
+                let st = `<span>${r.status1}</span>` + (r.status2 ? ` > ${r.status2}` : "") + (r.status3 ? ` > <b>${r.status3}</b>` : "");
+                container.innerHTML += `<div class="room-card ${r.isCompleted?'completed':''}" onclick="openRoomDetail(${i})"><div><div class="room-number">${r.number}</div><div style="font-size:0.7rem; color:#888">${r.timeIn||'--'} - ${r.timeOut||'--'}</div></div><div class="room-status">${st}</div></div>`;
             });
         }
 
-        function updateStats() {
-            document.getElementById('total-credits').innerText = rooms.length;
-            const done = rooms.filter(r => r.isCompleted).length;
-            document.getElementById('total-done').innerText = done;
-            document.getElementById('total-progress').innerText = rooms.length - done;
-        }
-
-        // DETAIL ROOM
-        function openRoomDetail(index) {
-            currentRoomId = index;
-            const room = rooms[index];
-            
+        function openRoomDetail(i) {
+            currentRoomId = i; let r = rooms[i];
             document.getElementById('dashboard-page').classList.add('hidden');
             document.getElementById('detail-page').classList.remove('hidden');
-            
-            document.getElementById('detail-room-number').innerText = "Room " + room.number;
-            document.getElementById('detail-status-1').innerText = room.status1;
-            document.getElementById('display-status-2').innerText = room.status2 || (currentLang === 'en' ? "Select Status 2" : "Pilih Status 2");
-            document.getElementById('room-note').value = room.note;
-            
-            // Render Items
-            const itemListContainer = document.getElementById('amenities-list');
-            itemListContainer.innerHTML = "";
-            itemsList.forEach((item, i) => {
-                const qty = room.items[i];
-                const activeClass = qty > 0 ? "border-left: 3px solid var(--success-color);" : "";
-                itemListContainer.innerHTML += `
-                    <div class="item-row" style="${activeClass}" onclick="openQtyModal(${i})">
-                        <span>${item}</span>
-                        <span class="item-qty">${qty > 0 ? qty : ''}</span>
-                    </div>
-                `;
+            document.getElementById('detail-room-number').innerText = "Room " + r.number;
+            document.getElementById('detail-status-1').innerText = r.status1;
+            document.getElementById('display-status-2').innerText = r.status2 || "Select Status 2";
+            document.getElementById('display-time-in').innerText = r.timeIn || "--:--";
+            document.getElementById('display-time-out').innerText = r.timeOut || "--:--";
+            document.getElementById('room-note').value = r.note;
+            const list = document.getElementById('amenities-list'); list.innerHTML = "";
+            itemsList.forEach((it, idx) => {
+                list.innerHTML += `<div class="item-row" onclick="openQty(${idx})"><span>${it}</span><span class="item-qty">${r.items[idx]||''}</span></div>`;
             });
-
-            renderTimeUI(room);
-            
-            document.getElementById('room-note').oninput = function() {
-                rooms[currentRoomId].note = this.value;
-                saveData();
-            };
+            document.getElementById('room-note').oninput = (e) => { rooms[currentRoomId].note = e.target.value; save(); };
         }
 
-        function renderTimeUI(room) {
-            const btnIn = document.getElementById('btn-time-in');
-            const btnOut = document.getElementById('btn-time-out');
-            
-            document.getElementById('display-time-in').innerText = room.timeIn || "--:--";
-            document.getElementById('display-time-out').innerText = room.timeOut || "--:--";
-            
-            if(room.timeIn) btnIn.classList.add('active'); else btnIn.classList.remove('active');
-            if(room.timeOut) btnOut.classList.add('active'); else btnOut.classList.remove('active');
+        function setTime(t) {
+            let time = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+            if(t==='in') rooms[currentRoomId].timeIn = time; else rooms[currentRoomId].timeOut = time;
+            save(); openRoomDetail(currentRoomId);
         }
 
-        function goBack() {
-            document.getElementById('detail-page').classList.add('hidden');
-            showDashboard();
+        function openQty(i) { currentItemIndex = i; document.getElementById('qty-modal').classList.remove('hidden'); }
+        function selectQty(q) { rooms[currentRoomId].items[currentItemIndex] = q; save(); closeModal(); openRoomDetail(currentRoomId); }
+        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); }
+        function save() { localStorage.setItem('myra_rooms', JSON.stringify(rooms)); }
+        function updateStats() {
+            document.getElementById('total-credits').innerText = rooms.length;
+            document.getElementById('total-done').innerText = rooms.filter(r => r.isCompleted).length;
+            document.getElementById('total-progress').innerText = rooms.filter(r => !r.isCompleted).length;
         }
 
-        function setTime(type) {
-            const now = new Date();
-            const timeString = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-            
-            if (type === 'in') rooms[currentRoomId].timeIn = timeString;
-            else rooms[currentRoomId].timeOut = timeString;
-            
-            saveData();
-            renderTimeUI(rooms[currentRoomId]);
-        }
+        function goBack() { document.getElementById('detail-page').classList.add('hidden'); showDashboard(); }
+        function goBackToDashboard() { document.getElementById('summary-page').classList.add('hidden'); showDashboard(); }
 
-        function openQtyModal(itemIndex) {
-            currentItemIndex = itemIndex;
-            document.getElementById('qty-modal').classList.remove('hidden');
-        }
-
-        function selectQty(qty) {
-            rooms[currentRoomId].items[currentItemIndex] = qty;
-            saveData();
-            closeModal();
-            openRoomDetail(currentRoomId); 
-        }
-
-        function finishRoom(finalStatus) {
-            rooms[currentRoomId].status3 = finalStatus;
-            rooms[currentRoomId].isCompleted = true;
-            saveData();
-            goBack();
-        }
-
-        // SUMMARY
         function showSummary() {
             document.getElementById('dashboard-page').classList.add('hidden');
             document.getElementById('summary-page').classList.remove('hidden');
-            
             document.getElementById('sum-name').innerText = currentUser;
-            const now = new Date();
-            const dateOpts = currentLang === 'en' ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } : { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const langCode = currentLang === 'en' ? 'en-US' : 'id-ID';
-            document.getElementById('sum-date').innerText = now.toLocaleDateString(langCode, dateOpts);
-            
-            // Fill Activity Notes
+            document.getElementById('sum-date').innerText = new Date().toLocaleDateString();
             document.getElementById('sum-morning').innerText = activities.morning || "-";
             document.getElementById('sum-afternoon').innerText = activities.afternoon || "-";
-
-            const tbody = document.getElementById('summary-body');
-            tbody.innerHTML = "";
-            
-            rooms.forEach(room => {
-                let itemsUsed = [];
-                room.items.forEach((qty, i) => {
-                    if(qty > 0) itemsUsed.push(`${itemsList[i]} (${qty})`);
-                });
-                
-                let s1 = room.status1;
-                let s2 = room.status2 ? ` > ${room.status2}` : "";
-                let s3 = room.status3 ? ` > ${room.status3}` : "";
-                let statusFlow = `<b>${s1}</b>${s2}${s3}`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${room.number}</strong></td>
-                        <td>In: ${room.timeIn}<br>Out: ${room.timeOut}</td>
-                        <td>${statusFlow}</td>
-                        <td>${itemsUsed.join(', ') || '-'}</td>
-                    </tr>
-                `;
+            const body = document.getElementById('summary-body'); body.innerHTML = "";
+            rooms.forEach(r => {
+                let used = []; r.items.forEach((q, idx) => { if(q>0) used.push(`${itemsList[idx]}(${q})`); });
+                body.innerHTML += `<tr><td>${r.number}</td><td>${r.timeIn}-${r.timeOut}</td><td>${r.status1}>${r.status2}>${r.status3}</td><td>${used.join(', ')}</td></tr>`;
             });
-
             document.getElementById('sum-credit').innerText = rooms.length;
             document.getElementById('sum-done').innerText = rooms.filter(r => r.isCompleted).length;
         }
 
-        function goBackToDashboard() {
-            document.getElementById('summary-page').classList.add('hidden');
-            document.getElementById('dashboard-page').classList.remove('hidden');
-        }
-
-        function printReport() {
-            window.print();
-        }
+        function openUserMenu() { document.getElementById('user-menu-modal').classList.remove('hidden'); }
+        function printReport() { window.print(); }
     </script>
 </body>
 </html>
