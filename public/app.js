@@ -1,73 +1,141 @@
-let rooms = JSON.parse(localStorage.getItem("rooms") || "[]");
+let rooms = JSON.parse(localStorage.getItem("rooms")) || [];
+let currentRoom = null;
 
 function login() {
-  const user = document.getElementById("username").value;
-  localStorage.setItem("user", user);
-  window.location.href = "dashboard.html";
+  const name = document.getElementById("userName").value;
+  if (!name) return alert("Isi nama dulu");
+  document.getElementById("loginPage").classList.add("hidden");
+  document.getElementById("mainPage").classList.remove("hidden");
+}
+
+function saveData() {
+  localStorage.setItem("rooms", JSON.stringify(rooms));
 }
 
 function addRoom() {
-  const room = {
-    number: document.getElementById("roomNumber").value,
-    status1: document.getElementById("roomStatus").value,
-    timeIn: null,
-    timeOut: null,
-    summary: {
-      handuk: 0,
-      linen: 0,
-      amenities: 0
-    },
-    finished: false
-  };
+  const number = document.getElementById("roomNumber").value;
+  const status = document.getElementById("statusAwal").value;
+  if (!number || !status) return alert("Lengkapi data kamar");
 
-  rooms.push(room);
-  saveRooms();
+  rooms.push({
+    number,
+    status1: status,
+    status2: "",
+    status3: "",
+    timeIn: "",
+    timeOut: "",
+    items: {},
+    done: false
+  });
+
+  saveData();
   renderRooms();
 }
 
 function renderRooms() {
   const list = document.getElementById("roomList");
-  if (!list) return;
-
   list.innerHTML = "";
-  rooms.forEach((r, i) => {
+
+  rooms.forEach((room, index) => {
     const li = document.createElement("li");
-    li.innerText = r.number + " - " + r.status1 + (r.finished ? " ✔" : "");
-    li.onclick = () => {
-      localStorage.setItem("currentRoom", i);
-      window.location.href = "room.html";
-    };
+    li.className = "room-item" + (room.done ? " room-done" : "");
+    li.innerHTML = `Kamar ${room.number} | ${room.status1}`;
+    li.onclick = () => openDetail(index);
     list.appendChild(li);
   });
+
+  document.getElementById("totalKredit").innerText = rooms.length;
+  document.getElementById("roomProgress").innerText = rooms.filter(r => !r.done).length;
+  document.getElementById("roomDone").innerText = rooms.filter(r => r.done).length;
+}
+
+function openDetail(index) {
+  currentRoom = index;
+  const room = rooms[index];
+
+  document.getElementById("mainPage").classList.add("hidden");
+  const page = document.getElementById("detailPage");
+  page.classList.remove("hidden");
+
+  page.innerHTML = `
+    <h3>Kamar ${room.number}</h3>
+
+    <button onclick="timeIn()">Time In</button>
+    <p>${room.timeIn}</p>
+
+    <textarea id="note" placeholder="Catatan"></textarea>
+
+    <button onclick="timeOut()">Time Out</button>
+    <p>${room.timeOut}</p>
+
+    <select id="statusAkhir">
+      <option value="">Status Akhir</option>
+      <option>VC</option>
+      <option>OC</option>
+      <option>SO</option>
+      <option>DL</option>
+      <option>NS</option>
+      <option>SR</option>
+      <option>VCU</option>
+    </select>
+
+    <button onclick="finishRoom()">Simpan</button>
+  `;
 }
 
 function timeIn() {
-  const i = localStorage.getItem("currentRoom");
-  rooms[i].timeIn = new Date().toLocaleTimeString();
-  saveRooms();
+  rooms[currentRoom].timeIn = new Date().toLocaleTimeString();
+  saveData();
+  openDetail(currentRoom);
 }
 
 function timeOut() {
-  const i = localStorage.getItem("currentRoom");
-  rooms[i].timeOut = new Date().toLocaleTimeString();
-  saveRooms();
+  rooms[currentRoom].timeOut = new Date().toLocaleTimeString();
+  saveData();
+  openDetail(currentRoom);
 }
 
-function updateItem(item, value) {
-  const i = localStorage.getItem("currentRoom");
-  rooms[i].summary[item] += value;
-  saveRooms();
+function finishRoom() {
+  const status = document.getElementById("statusAkhir").value;
+  if (!status) return alert("Pilih status akhir");
+
+  rooms[currentRoom].status3 = status;
+  rooms[currentRoom].status1 = status;
+  rooms[currentRoom].done = true;
+
+  saveData();
+  document.getElementById("detailPage").classList.add("hidden");
+  document.getElementById("mainPage").classList.remove("hidden");
+  renderRooms();
 }
 
-function endRoom() {
-  const i = localStorage.getItem("currentRoom");
-  rooms[i].finished = true;
-  saveRooms();
-  window.location.href = "dashboard.html";
+function openSummary() {
+  document.getElementById("mainPage").classList.add("hidden");
+  const page = document.getElementById("summaryPage");
+  page.classList.remove("hidden");
+
+  let html = "<h3>Summary Shift</h3>";
+  rooms.forEach(r => {
+    html += `
+      <p>
+      Kamar ${r.number}<br>
+      Time In ${r.timeIn}<br>
+      Time Out ${r.timeOut}<br>
+      Status ${r.status1}<br>
+      </p>
+    `;
+  });
+
+  html += `<p>Total Kredit ${rooms.length}</p>`;
+  html += `<button onclick="window.print()">Cetak PDF</button>`;
+  html += `<button onclick="backHome()">Kembali</button>`;
+
+  page.innerHTML = html;
 }
 
-function saveRooms() {
-  localStorage.setItem("rooms", JSON.stringify(rooms));
+function backHome() {
+  document.getElementById("summaryPage").classList.add("hidden");
+  document.getElementById("mainPage").classList.remove("hidden");
 }
 
 renderRooms();
