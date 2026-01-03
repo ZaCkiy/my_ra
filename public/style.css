@@ -1,14 +1,62 @@
 body {
-  font-family: Arial;
-  padding: 20px;
+  font-family: Poppins, sans-serif;
+  background: #121212;
+  color: #eaeaea;
+  margin: 0;
+}
+
+.page {
+  padding: 16px;
+}
+
+.hidden {
+  display: none;
 }
 
 input, select, button {
-  padding: 10px;
-  margin: 5px 0;
   width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: #1f1f1f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
 }
 
 button {
-  cursor: pointer;
+  background: #3a3a3a;
+}
+
+button:hover {
+  background: #555;
+}
+
+header {
+  margin-bottom: 16px;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+#roomList {
+  list-style: none;
+  padding: 0;
+}
+
+.room-item {
+  padding: 12px;
+  background: #1f1f1f;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.room-done {
+  background: #2f5d3a;
+}
+
+.summary-btn {
+  margin-top: 20px;
 }
