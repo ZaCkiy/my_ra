@@ -91,6 +91,19 @@
         .item-row { background: var(--card-color); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; cursor: pointer; margin-bottom: 8px;}
         .item-qty { font-weight: bold; color: var(--success-color); }
 
+        .category-divider {
+            background: #333;
+            color: var(--accent-color);
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 15px 0 8px 0;
+            border-left: 3px solid var(--accent-color);
+            border-radius: 0 4px 4px 0;
+        }
+
         /* Summary */
         .summary-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
         .summary-table th, .summary-table td { border: 1px solid #444; padding: 8px; text-align: left; }
@@ -245,8 +258,17 @@
     </div>
 
     <script>
-        const itemsList = ["Sheet Twin", "Sheet King", "Duve Twin", "Duve King", "Pillow Case", "Bath Towel", "Hand Towel", "Bath Mat", "Soap", "Shampoo", "Dental Kit", "Shower Cap", "Sanitary Bag", "Cotton Bud", "Comb", "Tissue Roll", "Slipper", "Laundry Bag", "Laundry List", "Memo Pad", "Pencil", "White Sugar", "Brown Sugar", "Creamer", "Coffee", "Tea", "Mineral Water", "Stirrer", "Glass Coaster"];
-        // Status sesuai permintaan
+        // 1. DATA AMENITIES DENGAN KATEGORI (SEKAT)
+        const categorizedItems = [
+            { category: "Linen", items: ["Sheet Twin", "Sheet King", "Duve Twin", "Duve King", "Pillow Case"] },
+            { category: "Bathroom Amenities", items: ["Bath Towel", "Hand Towel", "Bath Mat", "Soap", "Shampoo", "Dental Kit", "Shower Cap", "Sanitary Bag", "Cotton Bud", "Comb", "Tissue Roll"] },
+            { category: "Other Items", items: ["Slipper", "Laundry Bag", "Laundry List", "Memo Pad", "Pencil"] },
+            { category: "Room Amenities", items: ["White Sugar", "Brown Sugar", "Creamer", "Coffee", "Tea", "Mineral Water", "Stirrer", "Glass Coaster"] }
+        ];
+
+        // Flat list untuk database agar tidak merusak data lama
+        const itemsList = categorizedItems.flatMap(c => c.items);
+        
         const allStatuses = ["VD", "VC", "OD", "OC", "ED", "NS", "SO", "VCU", "SR"];
 
         let currentUser = localStorage.getItem('myra_user') || "";
@@ -327,63 +349,66 @@
 
         function deleteRoom() {
             const roomNum = rooms[currentRoomId].number;
-            // Konfirmasi sebelum menghapus
             if (confirm(`Are you sure you want to delete Room ${roomNum}?`)) {
-                // Menghapus 1 data dari array berdasarkan index saat ini
-                rooms.splice(currentRoomId, 1); 
-                
-                // Simpan perubahan ke LocalStorage
-                save(); 
-                
-                // Kembali ke Dashboard
-                goBack(); 
-                
-                // Refresh daftar tampilan di Dashboard
-                renderRoomList(); 
-                updateStats();
+                rooms.splice(currentRoomId, 1); save(); goBack(); renderRoomList(); updateStats();
             }
         }
 
+        // 2. FUNGSI OPEN ROOM DETAIL (SUDAH DIUPDATE DENGAN SEKAT)
         function openRoomDetail(i) {
             currentRoomId = i; let r = rooms[i];
             document.getElementById('dashboard-page').classList.add('hidden');
             document.getElementById('detail-page').classList.remove('hidden');
+            
             document.getElementById('detail-room-number').innerText = "Room " + r.number;
             document.getElementById('detail-status-1').innerText = r.status1;
             document.getElementById('display-status-2').innerText = r.status2 || "Select Status 2";
             document.getElementById('display-time-in').innerText = r.timeIn || "--:--";
             document.getElementById('display-time-out').innerText = r.timeOut || "--:--";
-            document.getElementById('room-note').value = r.note;
-            const list = document.getElementById('amenities-list'); list.innerHTML = "";
-            itemsList.forEach((it, idx) => {
-                list.innerHTML += `<div class="item-row" onclick="openQty(${idx})"><span>${it}</span><span class="item-qty">${r.items[idx]||''}</span></div>`;
+            document.getElementById('room-note').value = r.note || "";
+
+            const list = document.getElementById('amenities-list'); 
+            list.innerHTML = "";
+            
+            let globalIdx = 0;
+            categorizedItems.forEach((group) => {
+                // Tambahkan judul kategori sebagai sekat
+                list.innerHTML += `<div class="category-divider">${group.category}</div>`;
+                
+                group.items.forEach((it) => {
+                    const currentIdx = globalIdx; 
+                    list.innerHTML += `
+                        <div class="item-row" onclick="openQty(${currentIdx})">
+                            <span>${it}</span>
+                            <span class="item-qty">${r.items[currentIdx] || ''}</span>
+                        </div>`;
+                    globalIdx++;
+                });
             });
+
             document.getElementById('room-note').oninput = (e) => { rooms[currentRoomId].note = e.target.value; save(); };
         }
 
         function setTime(t) {
             let r = rooms[currentRoomId];
-            let currentTime = r[t === 'in' ? 'timeIn' : 'timeOut'];
+            let key = (t === 'in' ? 'timeIn' : 'timeOut');
+            let currentTime = r[key];
 
-            // Jika waktu masih kosong, isi dengan waktu real-time
             if (!currentTime || currentTime === "--:--") {
                 let now = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.', ':');
-                if(t === 'in') r.timeIn = now; else r.timeOut = now;
+                r[key] = now;
                 save();
                 openRoomDetail(currentRoomId);
-            } 
-            // Jika sudah ada isinya, buka input manual
-            else {
+            } else {
                 let newTime = prompt("Edit Time (HH:mm):", currentTime);
                 if (newTime !== null) {
-                    // Validasi format jam sederhana (HH:mm)
                     const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
                     if (timeRegex.test(newTime)) {
-                        if(t === 'in') r.timeIn = newTime; else r.timeOut = newTime;
+                        r[key] = newTime;
                         save();
                         openRoomDetail(currentRoomId);
                     } else {
-                        alert("Format jam salah! Gunakan HH:mm (Contoh: 08:30)");
+                        alert("Format salah! Gunakan HH:mm");
                     }
                 }
             }
@@ -393,6 +418,7 @@
         function selectQty(q) { rooms[currentRoomId].items[currentItemIndex] = q; save(); closeModal(); openRoomDetail(currentRoomId); }
         function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); }
         function save() { localStorage.setItem('myra_rooms', JSON.stringify(rooms)); }
+        
         function updateStats() {
             document.getElementById('total-credits').innerText = rooms.length;
             document.getElementById('total-done').innerText = rooms.filter(r => r.isCompleted).length;
@@ -411,7 +437,8 @@
             document.getElementById('sum-afternoon').innerText = activities.afternoon || "-";
             const body = document.getElementById('summary-body'); body.innerHTML = "";
             rooms.forEach(r => {
-                let used = []; r.items.forEach((q, idx) => { if(q>0) used.push(`${itemsList[idx]}(${q})`); });
+                let used = []; 
+                r.items.forEach((q, idx) => { if(q>0) used.push(`${itemsList[idx]}(${q})`); });
                 body.innerHTML += `<tr><td>${r.number}</td><td>${r.timeIn}-${r.timeOut}</td><td>${r.status1}>${r.status2}>${r.status3}</td><td>${used.join(', ')}</td></tr>`;
             });
             document.getElementById('sum-credit').innerText = rooms.length;
