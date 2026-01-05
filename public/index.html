@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MyRa</title>
+    <title>MyRa - Room Attendant</title>
     <link rel="icon" href="https://img.icons8.com/ios-filled/50/bb86fc/broom.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* 1. VARIABEL TEMA (Bisa diubah via JS) */
+        /* --- 1. CSS VARIABLES (TEMA) --- */
         :root {
             --bg-color: #121212;
             --card-color: #1e1e1e;
@@ -21,48 +21,48 @@
             --input-bg: #2c2c2c;
         }
 
-        /* 2. GLOBAL STYLES */
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); -webkit-tap-highlight-color: transparent; padding-bottom: 40px;}
+        /* --- 2. GLOBAL STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); -webkit-tap-highlight-color: transparent; padding-bottom: 40px; }
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         .hidden { display: none !important; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: 'Poppins'; margin-top: 10px; }
         .btn-primary { background-color: var(--accent-color); color: #000; }
         .btn-success { background-color: var(--success-color); color: #000; }
         .btn-danger { background-color: var(--danger-color); color: #fff; }
+        
+        input, textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid #444; color: #fff; border-radius: 8px; margin-bottom: 10px; font-family: 'Poppins'; }
 
-        /* 3. KOMPONEN UI (Card, Modal, Stats) */
+        /* --- 3. UI COMPONENTS --- */
         .header-stats { display: flex; justify-content: space-between; background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .stat-box { text-align: center; font-size: 0.8rem; }
         .stat-box span { display: block; font-size: 1.2rem; font-weight: bold; color: var(--accent-color); }
         
-        .room-card { background: var(--card-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--accent-color); }
+        .room-card { background: var(--card-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--accent-color); cursor: pointer; }
         .room-card.completed { border-left: 5px solid var(--green-besi); background: #1b2e1b; }
         
+        /* Modal Styles */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .menu-list { width: 100%; max-width: 320px; background: var(--card-color); border-radius: 12px; padding: 20px; text-align: center; }
         .menu-item { padding: 15px; border-bottom: 1px solid #333; cursor: pointer; display: flex; align-items: center; gap: 10px; justify-content: center; }
 
-        /* Theme Circle Picker */
         .theme-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; }
 
-        /* 4. FORM & TABLES */
-        input, textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid #444; color: #fff; border-radius: 8px; margin-bottom: 10px; font-family: 'Poppins'; }
-        .summary-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .summary-table th, .summary-table td { border: 1px solid #444; padding: 8px; text-align: left; }
+        /* Table Summary */
+        .summary-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
+        .summary-table th, .summary-table td { border: 1px solid #444; padding: 8px; text-align: left; vertical-align: top; }
         
         .watermark { position: fixed; bottom: 10px; left: 10px; font-size: 10px; color: rgba(224,224,224,0.3); z-index: 99; pointer-events: none; }
-        
-        @media print { .no-print { display: none !important; } body { background: white; color: black; } }
+        @media print { .no-print { display: none !important; } body { background: white; color: black; } .summary-table th, .summary-table td { border: 1px solid #000; color: #000; } }
     </style>
 </head>
 <body>
 
     <div id="login-page" class="container" style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-        <h1 style="font-size: 2.5rem;"><i class="fa-solid fa-broom-ball icon" style="color: var(--accent-color);"></i>MyRA</h1>
+        <h1 style="font-size: 2.5rem;"><i class="fa-solid fa-broom-ball" style="color: var(--accent-color);"></i> MyRA</h1>
         <p style="margin-bottom: 20px; color: #aaa;" data-lang="app_desc">Room Attendant Worksheet</p>
-        <input type="text" id="username" placeholder="Name / ID" style="max-width: 300px;">
-        <button class="btn btn-primary" onclick="login()" data-lang="btn_login" style="max-width: 300px;">Start Shift</button>
+        <input type="text" id="username" placeholder="Masukkan Nama / ID">
+        <button class="btn btn-primary" onclick="login()" data-lang="btn_login">Mulai Shift</button>
     </div>
 
     <div id="dashboard-page" class="container hidden">
@@ -74,15 +74,15 @@
         </div>
 
         <div class="header-stats">
-            <div class="stat-box"><span id="total-credits">0</span><i class="fa-solid fa-coins"></i> <span data-lang="credit">Credit</span></div>
-            <div class="stat-box"><span id="total-progress">0</span><i class="fa-solid fa-spinner"></i> <span data-lang="progress">Progress</span></div>
-            <div class="stat-box"><span id="total-done" style="color: var(--success-color);">0</span><i class="fa-solid fa-check-circle"></i> <span data-lang="done">Done</span></div>
+            <div class="stat-box"><span id="total-credits">0</span><i class="fa-solid fa-door-open"></i> <span data-lang="credit">Kamar</span></div>
+            <div class="stat-box"><span id="total-progress">0</span><i class="fa-solid fa-spinner"></i> <span data-lang="progress">Proses</span></div>
+            <div class="stat-box"><span id="total-done" style="color: var(--success-color);">0</span><i class="fa-solid fa-check-circle"></i> <span data-lang="done">Selesai</span></div>
         </div>
 
         <div style="background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-            <h4 data-lang="input_room">New Room</h4>
+            <h4 data-lang="input_room">Input Kamar Baru</h4>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <input type="number" id="new-room-number" placeholder="Room No." style="margin:0;">
+                <input type="number" id="new-room-number" placeholder="No. Kamar" style="margin:0;">
                 <button class="btn btn-primary" style="margin:0; width: auto;" onclick="openStatusModal('initial')">Status 1</button>
             </div>
         </div>
@@ -90,67 +90,75 @@
         <div id="room-list"></div>
 
         <div style="margin-top: 20px; background: var(--card-color); padding: 15px; border-radius: 10px;">
-            <h4 data-lang="daily_act">Daily Activities</h4>
-            <textarea id="act-morning" placeholder="Morning Activity..." rows="2"></textarea>
-            <textarea id="act-afternoon" placeholder="Afternoon Activity..." rows="2"></textarea>
+            <h4 data-lang="daily_act">Aktivitas Harian</h4>
+            <textarea id="act-morning" placeholder="Aktivitas Pagi..."></textarea>
+            <textarea id="act-afternoon" placeholder="Aktivitas Sore..."></textarea>
         </div>
 
-        <button class="btn btn-danger" style="margin-top: 20px;" onclick="showSummary()">
-            <i class="fa-solid fa-file-invoice"></i> <span data-lang="btn_end">End Shift</span>
+        <button class="btn btn-danger" onclick="showSummary()">
+            <i class="fa-solid fa-file-invoice"></i> <span data-lang="btn_end">Akhiri Shift & Rekap</span>
         </button>
     </div>
 
     <div id="detail-page" class="container hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <button onclick="goBack()" style="background:none; border:none; color:white;"><i class="fa-solid fa-arrow-left fa-lg"></i></button>
-            <h2 id="detail-room-number">Room</h2>
-            <button class="btn-danger" style="padding: 5px 10px; border-radius: 5px;" onclick="deleteRoom()"><i class="fa-solid fa-trash"></i></button>
+            <h2 id="detail-room-number">Kamar</h2>
+            <button class="btn-danger" style="padding: 5px 10px; border-radius: 5px; width: auto; margin:0;" onclick="deleteRoom()"><i class="fa-solid fa-trash"></i></button>
         </div>
         
         <button id="btn-time-in" class="btn" style="background:#333; color:var(--accent-color); border:1px solid var(--accent-color);" onclick="setTime('in')">
-            Time In: <span id="display-time-in">--:--</span>
+            <i class="fa-solid fa-clock"></i> Time In: <span id="display-time-in">--:--</span>
         </button>
 
-        <button class="btn" style="background:var(--input-bg); color:white;" onclick="openStatusModal('status2')">
-            Next Status: <span id="display-status-2">Select</span>
+        <button class="btn" style="background:var(--input-bg); color:white; border:1px solid #555;" onclick="openStatusModal('status2')">
+            <i class="fa-solid fa-rotate"></i> Status 2: <span id="display-status-2">Pilih</span>
         </button>
 
         <div id="amenities-list" style="margin-top: 20px;"></div>
 
-        <h4 style="margin: 15px 0 5px 0;">Note:</h4>
-        <textarea id="room-note" rows="2"></textarea>
+        <h4 style="margin: 15px 0 5px 0;">Catatan Kamar:</h4>
+        <textarea id="room-note" rows="2" placeholder="Tulis catatan jika ada..."></textarea>
 
         <button id="btn-time-out" class="btn" style="background:#333; color:var(--accent-color); border:1px solid var(--accent-color);" onclick="setTime('out')">
-            Time Out: <span id="display-time-out">--:--</span>
+            <i class="fa-solid fa-clock"></i> Time Out: <span id="display-time-out">--:--</span>
         </button>
 
-        <button class="btn btn-success" onclick="openStatusModal('final')">Finish Room</button>
+        <button class="btn btn-success" onclick="openStatusModal('final')">Selesaikan Kamar</button>
     </div>
 
     <div id="summary-page" class="container hidden">
         <div class="no-print" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-            <button onclick="goBackToDashboard()" class="btn-primary" style="padding: 5px 15px; border-radius: 5px; width: auto;">Back</button>
-            <button onclick="window.print()" class="btn-success" style="padding: 5px 15px; border-radius: 5px; width: auto;">Print PDF</button>
+            <button onclick="goBack()" class="btn-primary" style="padding: 5px 15px; border-radius: 5px; width: auto; margin:0;">Kembali</button>
+            <button onclick="window.print()" class="btn-success" style="padding: 5px 15px; border-radius: 5px; width: auto; margin:0;">Simpan PDF</button>
         </div>
         <div id="summary-content">
-            <h2 style="text-align: center; margin-bottom: 20px;" data-lang="report_title">Daily Report</h2>
-            <p>Name: <span id="sum-name"></span> | Date: <span id="sum-date"></span></p>
-            <table class="summary-table" style="margin-top: 15px;">
-                <thead><tr><th>Room</th><th>Time</th><th>Status</th><th>Items</th></tr></thead>
+            <h2 style="text-align: center; border-bottom: 2px solid #444; padding-bottom: 10px;" data-lang="report_title">Laporan Harian</h2>
+            <p style="margin-top:10px;"><b>Nama:</b> <span id="sum-name"></span></p>
+            <p><b>Tanggal:</b> <span id="sum-date"></span></p>
+            
+            <table class="summary-table">
+                <thead>
+                    <tr><th>Kamar</th><th>Jam</th><th>Status</th><th>Barang & Catatan</th></tr>
+                </thead>
                 <tbody id="summary-body"></tbody>
             </table>
+
+            <div style="margin-top: 15px; text-align: right;">
+                <p>Total Kamar: <span id="sum-credit">0</span> | Selesai: <span id="sum-done">0</span></p>
+            </div>
         </div>
     </div>
 
     <div id="user-menu-modal" class="modal hidden" onclick="closeModal()">
         <div class="menu-list" onclick="event.stopPropagation()">
-            <h3>Settings</h3>
+            <h3 style="margin-bottom:15px;">Pengaturan</h3>
             <div class="menu-item" onclick="switchLanguage()">
-                <i class="fa-solid fa-language"></i> <span id="lang-label">Switch Language</span>
+                <i class="fa-solid fa-language"></i> <span id="lang-label">Ganti Bahasa</span>
             </div>
 
             <div style="padding: 15px 0;">
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Change App Theme:</p>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Pilih Tema Aplikasi:</p>
                 <div style="display: flex; justify-content: center; gap: 12px;">
                     <div onclick="changeTheme('purple')" class="theme-dot" style="background: #bb86fc;"></div>
                     <div onclick="changeTheme('ocean')" class="theme-dot" style="background: #38bdf8;"></div>
@@ -161,30 +169,30 @@
             </div>
 
             <div class="menu-item" style="color:var(--danger-color); border-top: 1px solid #333;" onclick="logout()">
-                <i class="fa-solid fa-power-off"></i> Logout & Reset
+                <i class="fa-solid fa-power-off"></i> Logout & Reset Data
             </div>
-            <button class="btn btn-danger" onclick="closeModal()">Close</button>
+            <button class="btn btn-danger" onclick="closeModal()">Tutup</button>
         </div>
     </div>
 
     <div id="status-modal" class="modal hidden">
         <div class="menu-list">
-            <h3 data-lang="select_status">Select Status</h3>
+            <h3 data-lang="select_status">Pilih Status</h3>
             <div id="status-options" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px;"></div>
-            <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-danger" onclick="closeModal()">Batal</button>
         </div>
     </div>
 
     <div id="qty-modal" class="modal hidden">
         <div class="menu-list">
-            <h3>Quantity</h3>
+            <h3>Jumlah (Qty)</h3>
             <div id="qty-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px;"></div>
-            <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-danger" onclick="closeModal()">Batal</button>
         </div>
     </div>
 
     <script>
-        // --- 1. CONFIG & DATA ---
+        // --- 1. DATA MASTER ---
         const categorizedItems = [
             { category: "Linen", items: ["Sheet Twin", "Sheet King", "Duve Twin", "Duve King", "Pillow Case"] },
             { category: "Bathroom", items: ["Bath Towel", "Hand Towel", "Bath Mat", "Soap", "Shampoo", "Dental Kit", "Tissue Roll"] },
@@ -193,7 +201,6 @@
         const itemsList = categorizedItems.flatMap(c => c.items);
         const allStatuses = ["VD", "VC", "OD", "OC", "ED", "NS", "SO", "VCU", "SR"];
         
-        // Theme Colors
         const themes = {
             purple: { '--bg-color': '#121212', '--card-color': '#1e1e1e', '--accent-color': '#bb86fc', '--input-bg': '#2c2c2c' },
             ocean: { '--bg-color': '#0f172a', '--card-color': '#1e293b', '--accent-color': '#38bdf8', '--input-bg': '#334155' },
@@ -203,28 +210,29 @@
         };
 
         const langDict = {
-            en: { app_desc: "Worksheet RA", btn_login: "Start Shift", hi: "Hi", credit: "Room", progress: "Progress", done: "Done", input_room: "Input Room", daily_act: "Daily Activities", btn_end: "Summary", select_status: "Status", lang_label: "To Indonesia" },
-            id: { app_desc: "Laporan RA", btn_login: "Mulai Kerja", hi: "Halo", credit: "Kamar", progress: "Proses", done: "Selesai", input_room: "Input Kamar", daily_act: "Aktivitas Hari Ini", btn_end: "Rekap Laporan", select_status: "Pilih Status", lang_label: "Ke B.Inggris" }
+            en: { app_desc: "Room Attendant Worksheet", btn_login: "Start Shift", hi: "Hi", credit: "Room", progress: "Progress", done: "Done", input_room: "New Room Input", daily_act: "Daily Activities", btn_end: "End Shift & Summary", select_status: "Select Status", report_title: "Daily Report" },
+            id: { app_desc: "Aplikasi Room Attendant", btn_login: "Mulai Shift", hi: "Halo", credit: "Kamar", progress: "Proses", done: "Selesai", input_room: "Input Kamar Baru", daily_act: "Aktivitas Harian", btn_end: "Akhiri Shift & Rekap", select_status: "Pilih Status", report_title: "Laporan Harian" }
         };
 
-        // --- 2. STATE MANAGEMENT ---
+        // --- 2. STATE ---
         let currentUser = localStorage.getItem('myra_user') || "";
         let rooms = JSON.parse(localStorage.getItem('myra_rooms')) || [];
         let activities = JSON.parse(localStorage.getItem('myra_activities')) || { morning: "", afternoon: "" };
         let currentLang = localStorage.getItem('myra_lang') || "en";
         let currentRoomId = null, currentStatusType = "", currentItemIndex = -1;
 
-        // --- 3. CORE FUNCTIONS ---
+        // --- 3. INISIALISASI ---
         window.onload = () => {
             applyLanguage();
             applyTheme(localStorage.getItem('myra_theme') || 'purple');
-            if(currentUser) showDashboard();
             setupQtyGrid();
+            if(currentUser) showDashboard();
         };
 
+        // --- 4. FUNGSI AUTH & NAVIGATION ---
         function login() {
             let n = document.getElementById('username').value;
-            if(!n) return alert("Enter Name!");
+            if(!n) return alert("Nama tidak boleh kosong!");
             currentUser = n; localStorage.setItem('myra_user', n);
             showDashboard();
         }
@@ -239,31 +247,104 @@
             updateStats();
         }
 
-        // --- 4. THEME & LANG ENGINE ---
-        function changeTheme(name) {
-            applyTheme(name);
-            localStorage.setItem('myra_theme', name);
+        function goBack() { showDashboard(); }
+
+        // --- 5. LOGIKA KAMAR & STATUS ---
+        function addRoom(s) {
+            let num = document.getElementById('new-room-number').value;
+            if(!num) return alert("Isi No Kamar!");
+            rooms.push({ number: num, status1: s, status2: "", status3: "", timeIn: "", timeOut: "", items: new Array(itemsList.length).fill(0), note: "", isCompleted: false });
+            save(); document.getElementById('new-room-number').value = ""; renderRoomList(); updateStats();
         }
 
-        function applyTheme(name) {
-            const t = themes[name] || themes.purple;
-            for (let prop in t) document.documentElement.style.setProperty(prop, t[prop]);
+        function openRoomDetail(i) {
+            currentRoomId = i; let r = rooms[i];
+            hideAllPages();
+            document.getElementById('detail-page').classList.remove('hidden');
+            document.getElementById('detail-room-number').innerText = "Kamar " + r.number;
+            document.getElementById('display-status-2').innerText = r.status2 || "Pilih";
+            document.getElementById('display-time-in').innerText = r.timeIn || "--:--";
+            document.getElementById('display-time-out').innerText = r.timeOut || "--:--";
+            document.getElementById('room-note').value = r.note || "";
+
+            const list = document.getElementById('amenities-list');
+            list.innerHTML = "";
+            let idx = 0;
+            categorizedItems.forEach(cat => {
+                list.innerHTML += `<div style="color:var(--accent-color); font-size:0.75rem; margin:15px 0 5px 0; font-weight:bold; border-bottom:1px solid #333">${cat.category}</div>`;
+                cat.items.forEach(item => {
+                    let currentIdx = idx;
+                    list.innerHTML += `
+                        <div onclick="openQtyModal(${currentIdx})" style="display:flex; justify-content:space-between; background:var(--card-color); padding:12px; border-radius:8px; margin-bottom:5px;">
+                            <span>${item}</span>
+                            <span style="color:var(--success-color); font-weight:bold;">${r.items[currentIdx] || ''}</span>
+                        </div>`;
+                    idx++;
+                });
+            });
+            
+            // Simpan catatan saat diketik
+            document.getElementById('room-note').oninput = (e) => { rooms[currentRoomId].note = e.target.value; save(); };
         }
 
-        function switchLanguage() {
-            currentLang = (currentLang === 'en' ? 'id' : 'en');
-            localStorage.setItem('myra_lang', currentLang);
-            applyLanguage();
-            closeModal();
+        // --- 6. LOGIKA WAKTU (SET & EDIT) ---
+        function setTime(type) {
+            let r = rooms[currentRoomId];
+            let key = (type === 'in' ? 'timeIn' : 'timeOut');
+            let currentTime = r[key];
+
+            if (!currentTime || currentTime === "--:--") {
+                let now = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.', ':');
+                r[key] = now;
+                save();
+                openRoomDetail(currentRoomId);
+            } else {
+                let newTime = prompt("Edit Jam (Format HH:mm):", currentTime);
+                if (newTime !== null) {
+                    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+                    if (timeRegex.test(newTime)) {
+                        r[key] = newTime;
+                        save();
+                        openRoomDetail(currentRoomId);
+                    } else { alert("Format salah! Gunakan HH:mm (Contoh 14:05)"); }
+                }
+            }
         }
 
-        function applyLanguage() {
-            const d = langDict[currentLang];
-            document.querySelectorAll('[data-lang]').forEach(el => el.innerText = d[el.getAttribute('data-lang')]);
-            document.getElementById('lang-label').innerText = d.lang_label;
+        // --- 7. LOGIKA SUMMARY (LAPORAN) ---
+        function showSummary() {
+            hideAllPages();
+            document.getElementById('summary-page').classList.remove('hidden');
+            document.getElementById('sum-name').innerText = currentUser;
+            document.getElementById('sum-date').innerText = new Date().toLocaleDateString('id-ID');
+            
+            const body = document.getElementById('summary-body');
+            body.innerHTML = "";
+
+            rooms.forEach(r => {
+                // Ambil barang yang diisi saja
+                let itemsUsed = r.items.map((q, i) => q > 0 ? `${itemsList[i]} (${q})` : null).filter(x => x !== null).join(', ');
+                
+                // Gabungkan Status
+                let statusPath = [r.status1, r.status2, r.status3].filter(s => s && s !== "").join(' > ');
+                
+                // Note
+                let noteLine = r.note ? `<br><div style="color:#aaa; font-style:italic; margin-top:5px;">Note: ${r.note}</div>` : "";
+
+                body.innerHTML += `
+                    <tr>
+                        <td><b>${r.number}</b></td>
+                        <td>${r.timeIn || '--'} - ${r.timeOut || '--'}</td>
+                        <td>${statusPath}</td>
+                        <td>${itemsUsed || '-'}${noteLine}</td>
+                    </tr>`;
+            });
+            
+            document.getElementById('sum-credit').innerText = rooms.length;
+            document.getElementById('sum-done').innerText = rooms.filter(r => r.isCompleted).length;
         }
 
-        // --- 5. ROOM LOGIC ---
+        // --- 8. UTILS & MODALS ---
         function openStatusModal(type) {
             currentStatusType = type;
             const grid = document.getElementById('status-options');
@@ -281,18 +362,53 @@
             else if(currentStatusType === 'final') { rooms[currentRoomId].status3 = s; rooms[currentRoomId].isCompleted = true; save(); goBack(); }
         }
 
-        function addRoom(s) {
-            let num = document.getElementById('new-room-number').value;
-            if(!num) return alert("Room No?");
-            rooms.push({ number: num, status1: s, status2: "", status3: "", timeIn: "", timeOut: "", items: new Array(itemsList.length).fill(0), note: "", isCompleted: false });
-            save(); document.getElementById('new-room-number').value = ""; renderRoomList(); updateStats();
+        function setupQtyGrid() {
+            const grid = document.getElementById('qty-grid');
+            [1,2,3,4,5,6,7,8,9,10,0].forEach(n => {
+                grid.innerHTML += `<button class="btn" style="background:#444; color:white; margin:0;" onclick="selectQty(${n})">${n}</button>`;
+            });
+        }
+
+        function openQtyModal(i) { currentItemIndex = i; openModal('qty-modal'); }
+        function selectQty(q) { rooms[currentRoomId].items[currentItemIndex] = q; save(); closeModal(); openRoomDetail(currentRoomId); }
+        
+        function changeTheme(name) { applyTheme(name); localStorage.setItem('myra_theme', name); }
+        function applyTheme(name) {
+            const t = themes[name] || themes.purple;
+            for (let prop in t) document.documentElement.style.setProperty(prop, t[prop]);
+        }
+
+        function switchLanguage() {
+            currentLang = (currentLang === 'en' ? 'id' : 'en');
+            localStorage.setItem('myra_lang', currentLang);
+            applyLanguage();
+            closeModal();
+        }
+
+        function applyLanguage() {
+            const d = langDict[currentLang];
+            document.querySelectorAll('[data-lang]').forEach(el => el.innerText = d[el.getAttribute('data-lang')]);
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); }
+        function hideAllPages() { document.querySelectorAll('.container').forEach(p => p.classList.add('hidden')); }
+        function save() { localStorage.setItem('myra_rooms', JSON.stringify(rooms)); }
+        function updateStats() {
+            document.getElementById('total-credits').innerText = rooms.length;
+            document.getElementById('total-done').innerText = rooms.filter(r => r.isCompleted).length;
+            document.getElementById('total-progress').innerText = rooms.filter(r => !r.isCompleted).length;
+        }
+
+        function deleteRoom() {
+            if(confirm("Hapus data kamar ini?")) { rooms.splice(currentRoomId, 1); save(); goBack(); }
         }
 
         function renderRoomList() {
             const container = document.getElementById('room-list');
             container.innerHTML = "";
             rooms.forEach((r, i) => {
-                let st = `${r.status1} ${r.status2 ? '> '+r.status2 : ''} ${r.status3 ? '> '+r.status3 : ''}`;
+                let st = [r.status1, r.status2, r.status3].filter(s => s).join(' > ');
                 container.innerHTML += `
                     <div class="room-card ${r.isCompleted?'completed':''}" onclick="openRoomDetail(${i})">
                         <div>
@@ -304,144 +420,14 @@
             });
         }
 
-        function openRoomDetail(i) {
-            currentRoomId = i; let r = rooms[i];
-            hideAllPages();
-            document.getElementById('detail-page').classList.remove('hidden');
-            document.getElementById('detail-room-number').innerText = "Room " + r.number;
-            document.getElementById('display-status-2').innerText = r.status2 || "Select";
-            document.getElementById('display-time-in').innerText = r.timeIn || "--:--";
-            document.getElementById('display-time-out').innerText = r.timeOut || "--:--";
-            document.getElementById('room-note').value = r.note || "";
-
-            const list = document.getElementById('amenities-list');
-            list.innerHTML = "";
-            let idx = 0;
-            categorizedItems.forEach(cat => {
-                list.innerHTML += `<div style="color:var(--accent-color); font-size:0.7rem; margin:10px 0 5px 0; font-weight:bold; border-bottom:1px solid #333">${cat.category}</div>`;
-                cat.items.forEach(item => {
-                    let currentIdx = idx;
-                    list.innerHTML += `
-                        <div onclick="openQtyModal(${currentIdx})" style="display:flex; justify-content:space-between; background:var(--card-color); padding:10px; border-radius:8px; margin-bottom:5px;">
-                            <span>${item}</span>
-                            <span style="color:var(--success-color); font-weight:bold;">${r.items[currentIdx] || ''}</span>
-                        </div>`;
-                    idx++;
-                });
-            });
-        }
-
-        // --- 6. UTILS ---
-      // --- LOGIKA WAKTU (SET & EDIT) ---
-        function setTime(type) {
-            let r = rooms[currentRoomId];
-            let key = (type === 'in' ? 'timeIn' : 'timeOut');
-            let currentTime = r[key];
-
-            // Jika jam masih kosong, isi otomatis dengan jam sekarang
-            if (!currentTime || currentTime === "--:--") {
-                let now = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace('.', ':');
-                r[key] = now;
-                save();
-                openRoomDetail(currentRoomId);
-            } 
-            // Jika jam sudah ada isinya, buka kotak edit (Prompt)
-            else {
-                let newTime = prompt("Edit Time (Format HH:mm):", currentTime);
-                if (newTime !== null) {
-                    // Validasi format jam agar tetap rapi (HH:mm)
-                    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-                    if (timeRegex.test(newTime)) {
-                        r[key] = newTime;
-                        save();
-                        openRoomDetail(currentRoomId);
-                    } else {
-                        alert("Format salah! Gunakan format 24 jam (Contoh: 14:30)");
-                    }
-                }
-            }
-        }
-
-        function setupQtyGrid() {
-            const grid = document.getElementById('qty-grid');
-            [1,2,3,4,5,6,7,8,9,10,0].forEach(n => {
-                grid.innerHTML += `<button class="btn" style="background:#444; color:white; margin:0;" onclick="selectQty(${n})">${n}</button>`;
-            });
-        }
-
-        function openQtyModal(i) { currentItemIndex = i; openModal('qty-modal'); }
-        function selectQty(q) { rooms[currentRoomId].items[currentItemIndex] = q; save(); closeModal(); openRoomDetail(currentRoomId); }
-        
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); }
-        function hideAllPages() { document.querySelectorAll('.container').forEach(p => p.classList.add('hidden')); }
-        
-        function save() { localStorage.setItem('myra_rooms', JSON.stringify(rooms)); }
-        function updateStats() {
-            document.getElementById('total-credits').innerText = rooms.length;
-            document.getElementById('total-done').innerText = rooms.filter(r => r.isCompleted).length;
-            document.getElementById('total-progress').innerText = rooms.filter(r => !r.isCompleted).length;
-        }
-
-        function goBack() { showDashboard(); }
-        function goBackToDashboard() { showDashboard(); }
-
-        function showSummary() {
-            hideAllPages();
-            document.getElementById('summary-page').classList.remove('hidden');
-            
-            // Set Header Laporan
-            document.getElementById('sum-name').innerText = currentUser;
-            document.getElementById('sum-date').innerText = new Date().toLocaleDateString('id-ID');
-            
-            const body = document.getElementById('summary-body');
-            body.innerHTML = ""; // Bersihkan tabel sebelum isi ulang
-
-            rooms.forEach(r => {
-                // 1. Ambil Nama Barang (Hanya yang jumlahnya > 0)
-                let itemsStr = r.items.map((q, i) => {
-                    if (q > 0) {
-                        return `${itemsList[i]} (${q})`;
-                    }
-                    return null;
-                }).filter(x => x !== null).join(', ');
-
-                // 2. Gabungkan Status (Status 1 > Status 2 > Status 3)
-                let finalStatus = [r.status1, r.status2, r.status3].filter(s => s && s !== "").join(' > ');
-
-                // 3. Tambahkan Note jika ada
-                let noteText = r.note ? `<br><small><i>Note: ${r.note}</i></small>` : "";
-
-                // 4. Masukkan ke dalam baris tabel
-                body.innerHTML += `
-                    <tr>
-                        <td><b>${r.number}</b></td>
-                        <td>${r.timeIn || '--'} - ${r.timeOut || '--'}</td>
-                        <td>${finalStatus}</td>
-                        <td>${itemsStr || '-'}${noteText}</td>
-                    </tr>`;
-            });
-
-            // Update statistik di bawah laporan
-            const sumCredit = document.getElementById('sum-credit');
-            const sumDone = document.getElementById('sum-done');
-            if(sumCredit) sumCredit.innerText = rooms.length;
-            if(sumDone) sumDone.innerText = rooms.filter(r => r.isCompleted).length;
-        }
-
-        function deleteRoom() {
-            if(confirm("Delete this room?")) { rooms.splice(currentRoomId, 1); save(); goBack(); }
-        }
-
         function logout() {
-            if(confirm("Reset all data?")) { localStorage.clear(); location.reload(); }
+            if(confirm("Hapus SEMUA data dan keluar?")) { localStorage.clear(); location.reload(); }
         }
 
-        // Auto Save Activities
         document.getElementById('act-morning').oninput = (e) => { activities.morning = e.target.value; localStorage.setItem('myra_activities', JSON.stringify(activities)); };
         document.getElementById('act-afternoon').oninput = (e) => { activities.afternoon = e.target.value; localStorage.setItem('myra_activities', JSON.stringify(activities)); };
     </script>
 
-    <div class="watermark">©jackiy-2026 MyRA v1.1</div>
+    <div class="watermark">©jackiy-2026 MyRA v1.2</div>
 </body>
 </html>
