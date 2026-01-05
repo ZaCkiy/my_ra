@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MyRa</title><link rel="icon" href="https://img.icons8.com/ios-filled/50/ffffff/broom.png" type="image/png">
+    <title>MyRa</title>
+    <link rel="icon" href="https://img.icons8.com/ios-filled/50/bb86fc/broom.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -28,12 +29,13 @@
             bottom: 10px;
             left: 10px;
             font-size: 12px;
-            color: rgba(224, 224, 224, 0.4); /* Transparansi sekitar 60% (alpha 0.4) */
-            z-index: 999; /* Agar selalu di atas elemen lain */
-            pointer-events: none; /* Agar tidak mengganggu klik pada tombol lain */
+            color: rgba(224, 224, 224, 0.4);
+            z-index: 999;
+            pointer-events: none;
             font-weight: 300;
             letter-spacing: 1px;
         }
+
         /* Utility */
         .hidden { display: none !important; }
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
@@ -44,8 +46,18 @@
         .btn-danger { background-color: var(--danger-color); color: #fff; }
         .icon { margin-right: 8px; }
 
-        /* Login Page */
-        #login-page { display: flex; flex-direction: column; justify-content: center; height: 100vh; text-align: center; }
+        /* Login Page Center */
+        #login-page { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; /* Menengahkan horizontal */
+            height: 100vh; 
+            text-align: center; 
+        }
+        #login-page input { max-width: 300px; }
+        #login-page .btn { max-width: 300px; }
+
         input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid #444; color: #fff; border-radius: 8px; margin-bottom: 10px; font-family: 'Poppins'; }
         
         /* Dashboard Header */
@@ -66,7 +78,7 @@
         .btn-delete:active {
             background: var(--danger-color);
             color: #fff;
-              }
+        }
         
         /* Room List */
         .room-card { background: var(--card-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-left: 5px solid var(--accent-color); }
@@ -120,7 +132,7 @@
 <body>
 
     <div id="login-page" class="container">
-        <h1><i class="fa-solid fa-broom icon"></i>MyRA</h1>
+        <h1 style="font-size: 2.5rem;"><i class="fa-solid fa-broom-ball icon" style="color: var(--accent-color);"></i>MyRA</h1>
         <p style="margin-bottom: 20px; color: #aaa;" data-lang="app_desc">Room Attendant Worksheet</p>
         <input type="text" id="username" placeholder="Name / ID">
         <button class="btn btn-primary" onclick="login()" data-lang="btn_login">Start Shift</button>
@@ -130,7 +142,7 @@
         <div class="header-top">
             <h3><span data-lang="hi">Hi</span>, <span id="display-name">User</span></h3>
             <div onclick="openUserMenu()" style="cursor: pointer; padding: 8px; background: #333; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                <i class="fa-solid fa-user" style="font-size: 1.5rem;"></i>
+                <i class="fa-solid fa-circle-user" style="font-size: 1.8rem;"></i>
             </div>
         </div>
 
@@ -242,23 +254,34 @@
     </div>
 
     <div id="status-modal" class="modal hidden">
-        <h3 data-lang="select_status">Select Status</h3>
-        <div id="status-options" class="status-grid"></div>
-        <button class="btn btn-danger" onclick="closeModal()" data-lang="cancel">Cancel</button>
+        <div class="menu-list">
+            <h3 data-lang="select_status">Select Status</h3>
+            <div id="status-options" class="status-grid"></div>
+            <button class="btn btn-danger" onclick="closeModal()" data-lang="cancel" style="margin-top:15px;">Cancel</button>
+        </div>
     </div>
 
     <div id="qty-modal" class="modal hidden">
-        <h3>Qty</h3>
-        <div class="number-grid">
-            <script>
-                for(let i=1; i<=10; i++) document.write(`<button class="grid-btn" onclick="selectQty(${i})">${i}</button>`);
-            </script>
-            <button class="grid-btn" style="background:#555" onclick="selectQty(0)">0</button>
+        <div class="menu-list">
+            <h3>Qty</h3>
+            <div class="number-grid">
+                <button class="grid-btn" onclick="selectQty(1)">1</button>
+                <button class="grid-btn" onclick="selectQty(2)">2</button>
+                <button class="grid-btn" onclick="selectQty(3)">3</button>
+                <button class="grid-btn" onclick="selectQty(4)">4</button>
+                <button class="grid-btn" onclick="selectQty(5)">5</button>
+                <button class="grid-btn" onclick="selectQty(6)">6</button>
+                <button class="grid-btn" onclick="selectQty(7)">7</button>
+                <button class="grid-btn" onclick="selectQty(8)">8</button>
+                <button class="grid-btn" onclick="selectQty(9)">9</button>
+                <button class="grid-btn" onclick="selectQty(10)">10</button>
+                <button class="grid-btn" style="background:#555" onclick="selectQty(0)">0</button>
+            </div>
+            <button class="btn btn-danger" onclick="closeModal()" style="margin-top: 20px;">Cancel</button>
         </div>
     </div>
 
     <script>
-        // 1. DATA AMENITIES DENGAN KATEGORI (SEKAT)
         const categorizedItems = [
             { category: "Linen", items: ["Sheet Twin", "Sheet King", "Duve Twin", "Duve King", "Pillow Case"] },
             { category: "Bathroom Amenities", items: ["Bath Towel", "Hand Towel", "Bath Mat", "Soap", "Shampoo", "Dental Kit", "Shower Cap", "Sanitary Bag", "Cotton Bud", "Comb", "Tissue Roll"] },
@@ -266,9 +289,7 @@
             { category: "Room Amenities", items: ["White Sugar", "Brown Sugar", "Creamer", "Coffee", "Tea", "Mineral Water", "Stirrer", "Glass Coaster"] }
         ];
 
-        // Flat list untuk database agar tidak merusak data lama
         const itemsList = categorizedItems.flatMap(c => c.items);
-        
         const allStatuses = ["VD", "VC", "OD", "OC", "ED", "NS", "SO", "VCU", "SR"];
 
         let currentUser = localStorage.getItem('myra_user') || "";
@@ -354,7 +375,6 @@
             }
         }
 
-        // 2. FUNGSI OPEN ROOM DETAIL (SUDAH DIUPDATE DENGAN SEKAT)
         function openRoomDetail(i) {
             currentRoomId = i; let r = rooms[i];
             document.getElementById('dashboard-page').classList.add('hidden');
@@ -372,9 +392,7 @@
             
             let globalIdx = 0;
             categorizedItems.forEach((group) => {
-                // Tambahkan judul kategori sebagai sekat
                 list.innerHTML += `<div class="category-divider">${group.category}</div>`;
-                
                 group.items.forEach((it) => {
                     const currentIdx = globalIdx; 
                     list.innerHTML += `
