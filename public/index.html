@@ -53,7 +53,21 @@
         .header-stats { display: flex; justify-content: space-between; background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .stat-box { text-align: center; font-size: 0.8rem; }
         .stat-box span { display: block; font-size: 1.2rem; font-weight: bold; color: var(--accent-color); }
-
+        
+        .btn-delete {
+            background: none;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .btn-delete:active {
+            background: var(--danger-color);
+            color: #fff;
+              }
+        
         /* Room List */
         .room-card { background: var(--card-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-left: 5px solid var(--accent-color); }
         .room-card.completed { border-left: 5px solid var(--green-besi); background: #1b2e1b; } 
@@ -138,11 +152,21 @@
 
     <div id="detail-page" class="container hidden">
         <div class="detail-header">
-            <button onclick="goBack()" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="detail-room-number">Room</h2>
+            <button onclick="goBack()" style="background:none; border:none; color:white; font-size:1.2rem;">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            
+            <h2 id="detail-room-number" style="margin-bottom:0;">Room</h2>
+            
+            <button class="btn-delete" onclick="deleteRoom()">
+                <i class="fa-solid fa-trash-can"></i> Delete
+            </button>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
             <span id="detail-status-1" class="room-status"></span>
         </div>
-
+        
         <button id="btn-time-in" class="btn time-btn" onclick="setTime('in')">
             <i class="fa-regular fa-clock icon"></i> Time In <span id="display-time-in">--:--</span>
         </button>
@@ -299,6 +323,25 @@
                 let st = `<span>${r.status1}</span>` + (r.status2 ? ` > ${r.status2}` : "") + (r.status3 ? ` > <b>${r.status3}</b>` : "");
                 container.innerHTML += `<div class="room-card ${r.isCompleted?'completed':''}" onclick="openRoomDetail(${i})"><div><div class="room-number">${r.number}</div><div style="font-size:0.7rem; color:#888">${r.timeIn||'--'} - ${r.timeOut||'--'}</div></div><div class="room-status">${st}</div></div>`;
             });
+        }
+
+        function deleteRoom() {
+            const roomNum = rooms[currentRoomId].number;
+            // Konfirmasi sebelum menghapus
+            if (confirm(`Are you sure you want to delete Room ${roomNum}?`)) {
+                // Menghapus 1 data dari array berdasarkan index saat ini
+                rooms.splice(currentRoomId, 1); 
+                
+                // Simpan perubahan ke LocalStorage
+                save(); 
+                
+                // Kembali ke Dashboard
+                goBack(); 
+                
+                // Refresh daftar tampilan di Dashboard
+                renderRoomList(); 
+                updateStats();
+            }
         }
 
         function openRoomDetail(i) {
